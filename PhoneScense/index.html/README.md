@@ -2,25 +2,25 @@
 
 **An AI-powered computer vision module for real-time student phone-usage activity recognition.**
 
-> A core module of the [**StudentMate AI**](#-studentmate-ai-integration) ecosystem.
+A core module of the **StudentMate AI** ecosystem.
 
 ---
 
-## 1. 📌 Project Overview
+## 📌 Project Overview
 
-**PhoneSense** is an AI-powered computer vision system designed to recognize different student activities involving smartphone usage. Using a webcam and a custom-trained image classification model, PhoneSense delivers real-time predictions directly in the browser — no installation or backend server required.
+PhoneSense is an AI-powered computer vision system designed to recognize different student activities involving smartphone usage. Using a webcam and a custom-trained image classification model, PhoneSense delivers real-time predictions directly in the browser — no installation or backend server required.
 
 It is built as one module within the larger **StudentMate AI** project, which aims to understand and support student behavior through multiple AI-driven sensing modules.
 
 ---
 
-## 2. ❓ Problem Statement
+## ❓ Problem Statement
 
-Smartphone usage during study sessions is a major source of distraction for students. However, not all phone usage is equal — checking a dictionary app or reading study material differs greatly from texting or watching entertainment content. Manually identifying the *nature* of phone usage is impractical at scale, and most existing tools only detect phone *presence*, not phone *activity type*.
+Smartphone usage during study sessions is a major source of distraction for students. However, not all phone usage is equal — checking a dictionary app or reading study material differs greatly from texting or watching entertainment content. Manually identifying the nature of phone usage is impractical at scale, and most existing tools only detect phone *presence*, not phone *activity type*.
 
 ---
 
-## 3. 🎯 Objective
+## 🎯 Objective
 
 To build a lightweight, browser-based system that can:
 
@@ -31,7 +31,7 @@ To build a lightweight, browser-based system that can:
 
 ---
 
-## 4. ⚙️ How PhoneSense Works
+## ⚙️ How PhoneSense Works
 
 1. The user grants webcam access through the browser.
 2. Live video frames are captured continuously.
@@ -42,7 +42,7 @@ To build a lightweight, browser-based system that can:
 
 ---
 
-## 5. 🧠 AI Model
+## 🧠 AI Model
 
 | Attribute | Detail |
 |---|---|
@@ -55,7 +55,7 @@ The model runs entirely client-side in the browser, enabling real-time inference
 
 ---
 
-## 6. 🏷️ Classification Classes
+## 🏷️ Classification Classes
 
 PhoneSense classifies webcam input into **four classes**:
 
@@ -68,7 +68,7 @@ PhoneSense classifies webcam input into **four classes**:
 
 ---
 
-## 7. 🗂️ Dataset Preparation
+## 🗂️ Dataset Preparation
 
 A custom image dataset was collected and organized for the four target classes: **Study**, **Communication**, **Entertainment**, and **Unknown**. Images for each class were grouped into separate categories to train the classification model.
 
@@ -76,7 +76,7 @@ To evaluate the model's ability to generalize beyond the training data, a **sepa
 
 ---
 
-## 8. 🏋️ Model Training
+## 🏋️ Model Training
 
 The model was trained using Google Teachable Machine with the following configuration:
 
@@ -90,18 +90,18 @@ After training, the model was exported in **TensorFlow.js** format for direct in
 
 ---
 
-## 9. 🧪 Testing and Evaluation
+## 🧪 Testing and Evaluation
 
 The trained model was tested across **all four classes** using a separate set of test images to evaluate generalization performance.
 
-> ⚠️ **Note on Confidence vs. Accuracy:**
-> Observed **prediction confidence** during testing was approximately **85%–100%** across the classes. This reflects the model's confidence scores on test inputs and **should not be interpreted as a formal accuracy metric**. No claim of 100% accuracy is made — confidence values indicate the model's certainty for a given prediction, not a validated accuracy benchmark.
+> ⚠️ **Confidence vs. Accuracy:**
+> Observed **prediction confidence** during testing was approximately **85%–100%** across the classes. This reflects how certain the model was for a given prediction — it is **not** a formally measured accuracy score derived from a labeled evaluation dataset. No claim of 100% accuracy is made anywhere in this project. Prediction confidence and classification accuracy are distinct metrics, and only confidence values were observed during testing.
 
 ---
 
-## 10. 🌐 Web Application
+## 🌐 Web Application
 
-PhoneSense includes a browser-based interface built entirely with front-end web technologies — requiring no backend server for inference.
+PhoneSense is implemented as a **single-file web application**. The complete frontend — including HTML, CSS, and JavaScript — is contained within `index.html`. The application performs all inference client-side and does not require a backend server.
 
 **Built With:**
 - HTML5
@@ -109,47 +109,51 @@ PhoneSense includes a browser-based interface built entirely with front-end web 
 - JavaScript
 - TensorFlow.js
 - Teachable Machine Image Library
+- Webcam / browser camera access
 
 **Functionality:**
 - Requests webcam permission from the user
-- Displays the live camera feed
+- Displays a real-time webcam preview
 - Sends camera frames to the trained model for inference
-- Performs real-time classification
-- Displays confidence percentages for every class
+- Performs real-time AI image classification
+- Displays confidence percentages for all classes
 - Highlights the highest-confidence prediction
-- Provides **Start** and **Stop** camera controls
-- Features a responsive and modern user interface
+- Provides a **Start PhoneSense** button
+- Provides a **Stop Camera** button
+- Features a responsive, modern user interface
 
 ---
 
-## 11. ✨ Key Features
+## ✨ Key Features
 
 - 🎥 Real-time webcam-based activity classification
 - 🧠 Client-side AI inference using TensorFlow.js (no server required)
 - 📊 Live confidence scores displayed for all classes
 - ✅ Clear highlighting of the top prediction
-- ▶️ Simple Start/Stop camera controls
+- ▶️ Start PhoneSense and Stop Camera controls
 - 📱 Responsive, modern UI design
 - 🧩 Modular design for integration with StudentMate AI
 
 ---
 
-## 12. 🔄 System Workflow
+## 🔄 System Workflow
 
 ```mermaid
-flowchart LR
-    A[📁 Dataset Collection] --> B[🧹 Dataset Preparation]
-    B --> C[🏋️ Model Training]
-    C --> D[🧪 Model Testing]
-    D --> E[📦 TensorFlow.js Export]
-    E --> F[🌐 Web Integration]
-    F --> G[🎥 Camera Input]
-    G --> H[⚡ Real-Time Prediction]
+flowchart TD
+    A[Dataset Collection] --> B[Dataset Preparation]
+    B --> C[Model Training]
+    C --> D[Model Testing]
+    D --> E[TensorFlow.js Export]
+    E --> F[Web Integration]
+    F --> G[Webcam Input]
+    G --> H[Real-Time Prediction]
+    H --> I[Class Confidence Scores]
+    I --> J[Highest Confidence Result]
 ```
 
 ---
 
-## 13. 🛠️ Technologies Used
+## 🛠️ Technologies Used
 
 | Category | Technology |
 |---|---|
@@ -157,46 +161,45 @@ flowchart LR
 | Model Deployment | TensorFlow.js |
 | Frontend | HTML5, CSS3, JavaScript |
 | Inference Library | Teachable Machine Image Library |
+| Input Source | Webcam / Browser Camera Access |
 
 ---
 
-## 14. 📁 Project Structure
-PhoneSense/
-├── index.html # Main web application interface
-├── style.css # Styling for the web application
-├── script.js # Camera handling & model inference logic
-└── README.md # Project documentation
+## 📁 Project Structure
 
-
-> 📝 Structure reflects the core files of the web application. Adjust file names/paths as per your actual repository layout.
-
----
-
-## 15. 🚀 How to Run
-
-1. **Clone the repository**
-```bash
-   git clone https://github.com/Devika-2006/PhoneSense.git
-   cd PhoneSense
+```text
+StudentMate-AI/
+└── PhoneSense/
+    ├── index.html
+    └── README.md
 ```
 
-2. **Open the application**
-   Simply open `index.html` in a modern web browser (Chrome recommended).
-
-   Alternatively, serve it locally:
-```bash
-   npx serve .
-```
-
-3. **Start the classifier**
-   - Click **Start** to enable the webcam and begin real-time classification.
-   - Click **Stop** to end the session and release the camera.
+The complete application — including all HTML structure, CSS styling, and JavaScript logic for camera handling and model inference — is contained entirely within `index.html`.
 
 ---
 
-## 16. 🔐 Camera Permissions
+## 🚀 How to Run
 
-PhoneSense requires **webcam access** to function. When you click **Start**, your browser will prompt you to allow camera permissions.
+1. Clone the **StudentMate-AI** repository.
+2. Navigate into the **PhoneSense** folder.
+3. Run the project using **VS Code Live Server** or another local HTTPS/localhost server.
+4. Alternatively, access the deployed **GitHub Pages** version.
+5. Allow camera permission when prompted.
+6. Click **Start PhoneSense**.
+7. View real-time predictions.
+
+```bash
+git clone https://github.com/Devika-2006/StudentMate-AI.git
+cd StudentMate-AI/PhoneSense
+```
+
+> ⚠️ **Note:** Opening `index.html` directly via `file://` may prevent camera access from working correctly in some browsers. It is recommended to run the application through a local server (e.g., VS Code Live Server) or the deployed GitHub Pages link.
+
+---
+
+## 🔐 Camera Permissions
+
+PhoneSense requires webcam access to function. When you click **Start PhoneSense**, your browser will prompt you to allow camera permissions.
 
 - All video processing happens **locally in the browser**.
 - No video frames are uploaded or stored externally.
@@ -204,43 +207,43 @@ PhoneSense requires **webcam access** to function. When you click **Start**, you
 
 ---
 
-## 17. 🤝 Contribution
+## 🤝 Contribution
 
 This module is developed and maintained by **[Devika-2006](https://github.com/Devika-2006)** as part of the StudentMate AI project.
 
 Contributions, suggestions, and issue reports are welcome. To contribute:
 
-1. Fork the repository
+1. Fork the repository: [StudentMate-AI](https://github.com/Devika-2006/StudentMate-AI)
 2. Create a feature branch (`git checkout -b feature/your-feature`)
 3. Commit your changes
 4. Open a Pull Request
 
 ---
 
-## 18. 🔮 Future Improvements
+## 🔮 Future Improvements
 
 - Expanding the dataset for improved generalization across varied environments
-- Exploring formal accuracy evaluation using labeled validation datasets
+- Conducting formal accuracy evaluation using labeled validation datasets
 - Enhancing UI/UX with additional real-time analytics
 - Integrating PhoneSense output with the central StudentMate AI dashboard
 
 ---
 
-## 19. 📊 Project Status
+## 📊 Project Status
 
 🟢 **Active** — Core functionality (real-time classification via webcam) is implemented and functional. Further refinements are ongoing as part of the StudentMate AI integration effort.
 
 ---
 
-## 20. 🧩 StudentMate AI Integration
+## 🧩 StudentMate AI Integration
 
-**PhoneSense** is one of **three modules** that together form the **StudentMate AI** system — a multi-module AI framework for understanding student behavior through complementary sensing approaches.
+PhoneSense is one of **three modules** that together form the **StudentMate AI** system — a multi-module AI framework for understanding student behavior through complementary sensing approaches.
 
-| Module | Contributor | Focus Area |
+| Module | Contributor | Focus |
 |---|---|---|
-| 📱 **PhoneSense** | [Devika-2006](https://github.com/Devika-2006) | Camera/image-based phone activity detection |
-| 🎧 **FocusGuard** | mahikha-025 | Audio/environment classification |
-| 🧍 **PoseMate** | lekkauma09 | Pose/activity recognition |
+| 📱 PhoneSense | Devika-2006 | Camera/image-based phone activity detection |
+| 🎤 FocusGuard | mahikha-025 | Audio/environment classification |
+| 🧍 PoseMate | lekkauma09 | Pose/activity recognition |
 
 Each module operates independently but contributes to a unified vision of intelligent, multi-modal student behavior monitoring under the **StudentMate AI** umbrella.
 
