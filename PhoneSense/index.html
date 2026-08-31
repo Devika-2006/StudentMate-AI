@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhoneSense AI</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
+
+*{box-sizing:border-box}
+
+:root{
+  --bg:#080912;
+  --card:rgba(20,22,42,.72);
+  --line:rgba(255,255,255,.10);
+  --text:#f8f7ff;
+  --muted:#989bb7;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --cyan:#22d3ee;
+}
+
+body{
+  margin:0;
+  font-family:'DM Sans',Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 12% 8%,rgba(139,92,246,.20),transparent 28%),
+    radial-gradient(circle at 88% 88%,rgba(34,211,238,.12),transparent 28%),
+    var(--bg);
+  min-height:100vh;
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:44px 44px;
+}
+
+header{
+  height:78px;
+  background:rgba(8,9,18,.75);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--line);
+  padding:0 7%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo{
+  font-size:22px;
+  font-weight:800;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.logo:before{
+  content:"✦";
+  width:36px;
+  height:36px;
+  border-radius:11px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,var(--purple),var(--pink));
+  box-shadow:0 0 25px rgba(139,92,246,.4);
+}
+
+.logo span{
+  background:linear-gradient(90deg,#c4b5fd,#f9a8d4);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+.headerTag{
+  font-size:11px;
+  color:#9b9db6;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  border:1px solid var(--line);
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.03);
+}
+
+main{
+  max-width:1100px;
+  margin:auto;
+  padding:50px 20px;
+}
+
+.hero{
+  text-align:center;
+  margin-bottom:36px;
+}
+
+.hero .icon{
+  font-size:58px;
+  filter:drop-shadow(0 0 22px rgba(139,92,246,.45));
+}
+
+.hero h1{
+  font-size:clamp(44px,7vw,68px);
+  margin:7px 0;
+  letter-spacing:-2.5px;
+}
+
+.hero h1 span{
+  background:linear-gradient(90deg,#c4b5fd,#8b5cf6,#22d3ee);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+.hero p{
+  max-width:680px;
+  margin:auto;
+  color:var(--muted);
+  font-size:17px;
+  line-height:1.7;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:22px;
+}
+
+.card{
+  background:linear-gradient(
+    145deg,
+    rgba(25,27,50,.78),
+    rgba(11,13,27,.78)
+  );
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:25px;
+  box-shadow:0 25px 70px rgba(0,0,0,.38);
+  backdrop-filter:blur(16px);
+  position:relative;
+  overflow:hidden;
+}
+
+.card:before{
+  content:"";
+  position:absolute;
+  left:12%;
+  right:12%;
+  top:0;
+  height:1px;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    #a78bfa,
+    transparent
+  );
+}
+
+.card h2{
+  margin-top:0;
+}
+
+.note{
+  color:var(--muted);
+  line-height:1.6;
+  font-size:14px;
+}
+
+.camera{
+  height:400px;
+  background:#03040b;
+  border:1px solid rgba(139,92,246,.25);
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  margin:18px 0;
+  box-shadow:inset 0 0 65px rgba(139,92,246,.07);
+}
+
+.camera canvas{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.placeholder{
+  text-align:center;
+  color:#70738c;
+}
+
+button{
+  width:100%;
+  border:0;
+  border-radius:12px;
+  padding:15px;
+  margin-top:10px;
+  font-size:15px;
+  font-weight:800;
+  cursor:pointer;
+  color:#fff;
+  background:linear-gradient(100deg,#7c3aed,#ec4899);
+  box-shadow:0 10px 28px rgba(139,92,246,.24);
+  transition:.2s;
+}
+
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 34px rgba(139,92,246,.38);
+}
+
+button.secondary{
+  background:rgba(255,255,255,.055);
+  border:1px solid var(--line);
+  color:#c9cad8;
+  box-shadow:none;
+}
+
+button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.status{
+  text-align:center;
+  min-height:22px;
+  margin-top:13px;
+  font-size:13px;
+  color:var(--muted);
+}
+
+.ok{
+  color:#6ee7b7;
+}
+
+.error{
+  color:#fb7185;
+}
+
+.errorDetail{
+  text-align:center;
+  color:#fb7185;
+  font-size:12px;
+  word-break:break-word;
+}
+
+.prediction{
+  margin:18px 0;
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  font-weight:700;
+  font-size:14px;
+  margin-bottom:8px;
+}
+
+.top span:last-child{
+  color:#aaaec6;
+}
+
+.bar{
+  height:9px;
+  background:rgba(255,255,255,.07);
+  border-radius:99px;
+  overflow:hidden;
+}
+
+.bar i{
+  display:block;
+  height:100%;
+  width:0;
+  border-radius:99px;
+  background:linear-gradient(
+    90deg,
+    #7c3aed,
+    #ec4899,
+    #22d3ee
+  );
+  box-shadow:0 0 12px rgba(139,92,246,.4);
+  transition:width .25s;
+}
+
+.result{
+  margin-top:25px;
+  padding:24px;
+  border-radius:18px;
+  text-align:center;
+  background:
+    radial-gradient(
+      circle at 50% 0,
+      rgba(139,92,246,.18),
+      transparent 60%
+    ),
+    rgba(255,255,255,.035);
+  border:1px solid rgba(139,92,246,.2);
+}
+
+.resultIcon{
+  font-size:44px;
+}
+
+.resultName{
+  font-size:29px;
+  font-weight:800;
+  margin-top:5px;
+  background:linear-gradient(90deg,#c4b5fd,#f9a8d4);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+.confidence{
+  color:var(--muted);
+  margin-top:6px;
+  font-size:13px;
+}
+
+footer{
+  text-align:center;
+  color:#666a84;
+  font-size:11px;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
+  padding:34px;
+}
+
+@media(max-width:800px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  header{
+    padding:0 5%;
+  }
+
+  .headerTag{
+    display:none;
+  }
+
+  main{
+    padding:35px 15px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    Phone<span>Sense</span>
+  </div>
+
+  <div class="headerTag">
+    AI VISION SYSTEM
+  </div>
+</header>
+
+<main>
+
+<div class="hero">
+
+  <div class="icon">📱</div>
+
+  <h1>
+    Phone<span>Sense</span>
+  </h1>
+
+  <p>
+    Intelligent phone-use detection powered by your trained AI model.
+  </p>
+
+</div>
+
+<div class="grid">
+
+<!-- CAMERA -->
+<div class="card">
+
+  <h2>📷 Camera</h2>
+
+  <p class="note">
+    Allow camera access and show the phone or activity
+    you want PhoneSense to recognize.
+  </p>
+
+  <div id="camera" class="camera">
+
+    <div class="placeholder">
+      📷
+      <br><br>
+      Camera preview will appear here.
+    </div>
+
+  </div>
+
+  <button id="start">
+    Start PhoneSense
+  </button>
+
+  <button id="stop" class="secondary">
+    Stop Camera
+  </button>
+
+  <div id="status" class="status">
+    Ready.
+  </div>
+
+  <div id="errorDetail" class="errorDetail"></div>
+
+</div>
+
+
+<!-- PREDICTIONS -->
+<div class="card">
+
+  <h2>🤖 AI Prediction</h2>
+
+  <p class="note">
+    Live predictions from your PhoneSense model.
+  </p>
+
+  <div id="predictions">
+
+    <p class="note" style="text-align:center">
+      Start the camera to see predictions.
+    </p>
+
+  </div>
+
+  <div class="result">
+
+    <div id="resultIcon" class="resultIcon">
+      📱
+    </div>
+
+    <div id="resultName" class="resultName">
+      Waiting...
+    </div>
+
+    <div id="confidence" class="confidence">
+      No prediction yet.
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+
+</main>
+
+<footer>
+  StudentMate AI • PhoneSense
+</footer>
+
+
+<script>
+
+/* YOUR PHONESENSE MODEL */
+const MODEL_URL =
+  "https://teachablemachine.withgoogle.com/models/su87NinMB/";
+
+let model = null;
+let webcam = null;
+let running = false;
+let animationId = null;
+
+
+/* ELEMENTS */
+const startButton =
+  document.getElementById("start");
+
+const stopButton =
+  document.getElementById("stop");
+
+const camera =
+  document.getElementById("camera");
+
+const statusBox =
+  document.getElementById("status");
+
+const errorDetail =
+  document.getElementById("errorDetail");
+
+const predictionsBox =
+  document.getElementById("predictions");
+
+const resultIcon =
+  document.getElementById("resultIcon");
+
+const resultName =
+  document.getElementById("resultName");
+
+const confidence =
+  document.getElementById("confidence");
+
+
+/* ICONS FOR CLASSES */
+function iconFor(label){
+
+  const s =
+    String(label).toLowerCase();
+
+  if(s.includes("study"))
+    return "📚";
+
+  if(s.includes("phone"))
+    return "📱";
+
+  if(s.includes("unknown"))
+    return "❓";
+
+  if(s.includes("entertainment"))
+    return "🎮";
+
+  if(s.includes("communication"))
+    return "💬";
+
+  return "🤖";
+}
+
+
+/* SECURITY */
+function escapeHTML(value){
+
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+}
+
+
+/* START */
+async function startPhoneSense(){
+
+  if(!window.tmImage){
+
+    throw new Error(
+      "Teachable Machine Image library did not load."
+    );
+
+  }
+
+  statusBox.className = "status";
+  statusBox.textContent =
+    "Opening PhoneSense camera...";
+
+  errorDetail.textContent = "";
+
+
+  /* LOAD MODEL */
+  const modelURL =
+    MODEL_URL + "model.json";
+
+  const metadataURL =
+    MODEL_URL + "metadata.json";
+
+
+  model =
+    await tmImage.load(
+      modelURL,
+      metadataURL
+    );
+
+
+  /* CREATE WEBCAM */
+  webcam =
+    new tmImage.Webcam(
+      400,
+      400,
+      true
+    );
+
+
+  await webcam.setup();
+
+  await webcam.play();
+
+
+  /* SHOW CAMERA */
+  camera.innerHTML = "";
+
+  camera.appendChild(
+    webcam.canvas
+  );
+
+
+  running = true;
+
+  startButton.disabled = true;
+
+
+  statusBox.className =
+    "status ok";
+
+  statusBox.textContent =
+    "PhoneSense AI is actively scanning.";
+
+
+  predictLoop();
+
+}
+
+
+/* PREDICTION LOOP */
+async function predictLoop(){
+
+  if(
+    !running ||
+    !webcam ||
+    !model
+  ){
+
+    return;
+
+  }
+
+
+  webcam.update();
+
+
+  const predictions =
+    await model.predict(
+      webcam.canvas
+    );
+
+
+  renderPredictions(
+    predictions
+  );
+
+
+  animationId =
+    requestAnimationFrame(
+      predictLoop
+    );
+
+}
+
+
+/* DISPLAY PREDICTIONS */
+function renderPredictions(
+  predictions
+){
+
+  if(
+    !predictions ||
+    predictions.length === 0
+  ){
+
+    return;
+
+  }
+
+
+  const sorted =
+    [...predictions].sort(
+      (a,b) =>
+        b.probability -
+        a.probability
+    );
+
+
+  const best =
+    sorted[0];
+
+
+  resultIcon.textContent =
+    iconFor(best.className);
+
+  resultName.textContent =
+    best.className;
+
+  confidence.textContent =
+    (best.probability * 100)
+      .toFixed(1)
+    + "% model confidence";
+
+
+  predictionsBox.innerHTML =
+    "";
+
+
+  sorted.forEach(
+    prediction => {
+
+      const percentage =
+        (
+          prediction.probability *
+          100
+        ).toFixed(1);
+
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.className =
+        "prediction";
+
+
+      row.innerHTML = `
+
+        <div class="top">
+
+          <span>
+            ${iconFor(
+              prediction.className
+            )}
+
+            ${escapeHTML(
+              prediction.className
+            )}
+
+          </span>
+
+          <span>
+            ${percentage}%
+          </span>
+
+        </div>
+
+        <div class="bar">
+
+          <i
+            style="width:${percentage}%">
+          </i>
+
+        </div>
+
+      `;
+
+
+      predictionsBox.appendChild(
+        row
+      );
+
+    }
+
+  );
+
+}
+
+
+/* START BUTTON */
+async function start(){
+
+  if(running)
+    return;
+
+
+  startButton.disabled =
+    true;
+
+  errorDetail.textContent =
+    "";
+
+
+  try{
+
+    await startPhoneSense();
+
+  }
+
+  catch(error){
+
+    console.error(
+      "PhoneSense error:",
+      error
+    );
+
+
+    startButton.disabled =
+      false;
+
+
+    statusBox.className =
+      "status error";
+
+
+    statusBox.textContent =
+      "Could not start PhoneSense.";
+
+
+    errorDetail.textContent =
+      error.message ||
+      String(error);
+
+  }
+
+}
+
+
+/* STOP */
+function stop(){
+
+  running = false;
+
+
+  if(animationId){
+
+    cancelAnimationFrame(
+      animationId
+    );
+
+    animationId = null;
+
+  }
+
+
+  try{
+
+    if(webcam)
+      webcam.stop();
+
+  }
+
+  catch(e){}
+
+
+  webcam = null;
+  model = null;
+
+
+  startButton.disabled =
+    false;
+
+
+  camera.innerHTML = `
+
+    <div class="placeholder">
+
+      📷
+
+      <br><br>
+
+      Camera preview will appear here.
+
+    </div>
+
+  `;
+
+
+  statusBox.className =
+    "status";
+
+  statusBox.textContent =
+    "Camera stopped.";
+
+}
+
+
+/* EVENTS */
+startButton.addEventListener(
+  "click",
+  start
+);
+
+stopButton.addEventListener(
+  "click",
+  stop
+);
+
+window.addEventListener(
+  "beforeunload",
+  stop
+);
+
+</script>
+
+</body>
+</html>
