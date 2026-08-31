@@ -1,1 +1,0 @@
-# StudentMate-AI
